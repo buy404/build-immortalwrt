@@ -13,6 +13,7 @@ uci commit luci
 
 # Set etc/openwrt_release
 sed -i "s/DISTRIB_REVISION=.*/DISTRIB_REVISION='R$(date +%y.%m.%d)'/g" /etc/openwrt_release
-sed -i "s/DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='ImmortalWrt R$(date +%y.%m.%d)'/g" /etc/openwrt_release
+repo=$(cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION= | awk -F "'" '{print $2}' | awk -F " " '{print $1}')
+sed -i "s/DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='$repo R$(date +%y.%m.%d)'/g" /etc/openwrt_release
 
 exit 0
