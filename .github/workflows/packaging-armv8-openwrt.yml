@@ -69,7 +69,7 @@ jobs:
         branch: [master, openwrt-23.05]
 
     env:
-      RELEASE_TAG: armv8_${{ matrix.branch }}
+      RELEASE_TAG: armv8-${{ matrix.branch }}
 
     steps:
     - name: Checkout
@@ -167,7 +167,7 @@ jobs:
       if: env.PACKAGED_STATUS == 'success' && env.UPLOAD_RELEASE == 'true'
       uses: ncipollo/release-action@main
       with:
-        name: R${{ env.DATE }} for ${{ env.RELEASE_TAG }}
+        name: ${{ env.DATE }} for ${{ env.RELEASE_TAG }}
         allowUpdates: true
         removeArtifacts: true
         tag: ${{ env.RELEASE_TAG }}

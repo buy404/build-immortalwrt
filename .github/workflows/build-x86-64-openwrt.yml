@@ -9,7 +9,7 @@ on:
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
-  CONFIG_FILE: configs/x86_64.config
+  CONFIG_FILE: configs/x86-64.config
   DIY_SCRIPT: diy-scripts.sh
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
@@ -30,7 +30,7 @@ jobs:
         branch: [master, openwrt-23.05]
 
     env:
-      RELEASE_TAG: x86_64_${{ matrix.branch }}
+      RELEASE_TAG: x86-64-${{ matrix.branch }}
       REPO_BRANCH: ${{ matrix.branch }}
 
     steps:
@@ -198,7 +198,7 @@ jobs:
       if: steps.compile.conclusion == 'success' && env.UPLOAD_RELEASE == 'true'
       uses: ncipollo/release-action@main
       with:
-        name: R${{ env.DATE }} for ${{ env.RELEASE_TAG }}
+        name: ${{ env.DATE }} for ${{ env.RELEASE_TAG }}
         allowUpdates: true
         tag: ${{ env.RELEASE_TAG }}
         token: ${{ secrets.GITHUB_TOKEN }}
