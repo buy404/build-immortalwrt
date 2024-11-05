@@ -85,9 +85,6 @@ git_sparse_clone master https://github.com/brvphoenix/wrtbwmon wrtbwmon
 # 取消主题默认设置
 find package/luci-theme-*/ -type f -name '*luci-theme-*' -print -exec sed -i '/set luci.main.mediaurlbase/d' {} \;
 
-# etc/openwrt_release
-sed -i "s/DISTRIB_REVISION=.*/DISTRIB_REVISION='R$(date +%y.%m.%d)'/g; s/%V %C/%R/g" package/base-files/files/etc/openwrt_release
-
 # 调整 netdata 到 状态 菜单
 sed -i 's/system/status/g' feeds/luci/applications/luci-app-netdata/luasrc/controller/netdata.lua
 

@@ -11,4 +11,8 @@ uci commit luci
 # uci set fstab.@global[0].check_fs=1
 # uci commit fstab
 
+# Set etc/openwrt_release
+sed -i "s/DISTRIB_REVISION=.*/DISTRIB_REVISION='R$(date +%y.%m.%d)'/g" /etc/openwrt_release
+sed -i "s/DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='ImmortalWrt R$(date +%y.%m.%d)'/g" /etc/openwrt_release
+
 exit 0

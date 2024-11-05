@@ -14,6 +14,7 @@ env:
   CLASH_KERNEL: arm64
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
+  UPLOAD_ARTIFACT: false
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
@@ -21,10 +22,11 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
-    name: build for ${{ matrix.branch }}
+    name: build ${{ matrix.repo }} ${{ matrix.branch }}
     strategy:
       fail-fast: false
       matrix:
+        repo: [immortalwrt]
         branch: [master, openwrt-23.05]
 
     env:
@@ -122,6 +124,9 @@ jobs:
         cd $OPENWRT_PATH
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+        if [ ${{ matrix.branch }} == master ]; then
+          sed -i 's|"UPnP IGD 和 PCP/NAT-PMP"|"UPnP"|g' feeds/luci/applications/luci-app-upnp/po/zh_Hans/upnp.po
+        fi
 
     - name: Load Custom Configuration
       run: |
@@ -174,7 +179,8 @@ jobs:
         PACKAGE_SOC: s905d
         KERNEL_VERSION_NAME: 6.1.y_6.6.y
         KERNEL_AUTO_LATEST: true
-        DISTRIB_REVISION: R$(date +"%y.%m.%d")
+        DISTRIB_REVISION: R$(date +%y.%m.%d)
+        DISTRIB_DESCRIPTION: 'ImmortalWrt R$(date +%y.%m.%d)'
 
     - name: Organize Files
       if: env.PACKAGED_STATUS == 'success'
@@ -184,13 +190,13 @@ jobs:
         cp $OPENWRT_PATH/.config build.config
         mv -f $OPENWRT_PATH/bin/packages/*/*/*.ipk packages
         tar -zcf packages.tar.gz packages
-        rm -rf packages feeds.buildinfo version.buildinfo sha256sums *.manifest *.bin
+        rm -rf packages u-boot-qemu* feeds.buildinfo version.buildinfo sha256sums *.manifest *.bin
         echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
         cd $PACKAGED_OUTPUTPATH && rm *rootfs.tar.gz*
-        rename 's/openwrt/immortalwrt/' *
+        rename 's/openwrt/${{ matrix.repo }}/' *
 
     - name: Upload OpenWrt To Artifact
-      if: env.PACKAGED_STATUS == 'success' && env.UPLOAD_RELEASE != 'true'
+      if: env.PACKAGED_STATUS == 'success' && env.UPLOAD_ARTIFACT == 'true'
       uses: kittaakos/upload-artifact-as-is@master
       with:
         path: ${{ env.PACKAGED_OUTPUTPATH }}

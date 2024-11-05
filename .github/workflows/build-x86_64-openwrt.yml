@@ -14,6 +14,7 @@ env:
   CLASH_KERNEL: amd64
   CACHE_TOOLCHAIN: true
   UPLOAD_BIN_DIR: false
+  UPLOAD_ARTIFACT: false
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
@@ -21,10 +22,11 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
-    name: build for ${{ matrix.branch }}
+    name: build ${{ matrix.repo }} ${{ matrix.branch }}
     strategy:
       fail-fast: false
       matrix:
+        repo: [immortalwrt]
         branch: [master, openwrt-23.05]
 
     env:
@@ -122,6 +124,9 @@ jobs:
         cd $OPENWRT_PATH
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+        if [ ${{ matrix.branch }} == master ]; then
+          sed -i 's|"UPnP IGD 和 PCP/NAT-PMP"|"UPnP"|g' feeds/luci/applications/luci-app-upnp/po/zh_Hans/upnp.po
+        fi
 
     - name: Load Custom Configuration
       run: |
@@ -183,7 +188,7 @@ jobs:
         echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
 
     - name: Upload Firmware To Artifact
-      if: steps.compile.conclusion == 'success' && env.UPLOAD_RELEASE != 'true'
+      if: steps.compile.conclusion == 'success' && env.UPLOAD_ARTIFACT == 'true'
       uses: actions/upload-artifact@main
       with:
         name: ${{ env.SOURCE_REPO }}-firmware-${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}-${{ env.FILE_DATE }}
