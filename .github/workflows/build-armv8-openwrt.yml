@@ -26,8 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        repo: [immortalwrt]
-        branch: [master, openwrt-23.05]
+        repo: [lede,immortalwrt]
 
     env:
       RELEASE_TAG: armv8-${{ matrix.branch }}
