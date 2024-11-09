@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        repo: [lede,immortalwrt]
+        repo: [coolsnowwolf,immortalwrt]
 
     env:
       RELEASE_TAG: armv8-${{ matrix.branch }}
